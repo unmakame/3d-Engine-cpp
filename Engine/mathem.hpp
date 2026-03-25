@@ -20,7 +20,7 @@ public:
     friend float dot_prod(Vecd v1, Vecd v2){return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z; }
     // friend Vecd cross_prod(Vecd a, Vecd b) { return Vecd(a.y * b.z - a.z * b.y, a.z * b.x - a.x * b.z, a.x * b.y - a.y * b.x); }
     // float len() { return sqrt(x * x + y * y + z * z); }
-    // void norm() { *this /= sqrt(x * x + y * y + z * z); }
+    // void norm() { *this /= sqrt(x * x + y * y + z * z); } // 
 };
 
 }
