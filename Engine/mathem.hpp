@@ -44,5 +44,19 @@ public:
             }
         }
     }
-    // static const matr4x4 get (подумать и дописать в след итерацию)
+
+    static const matr4x4 get_proj_mat(const int width = 1920,
+                              const int height = 1080,
+                              const float fNear = 0.1,
+                              const float fFar = 1000,
+                              const float FOV = 90)
+    {
+        const float PI = 3.14159;
+        return matr4x4(std::vector<std::vector<float>> {
+            {((float)height / (float)width) / tanf(FOV / 2 / 180 * PI), 0, 0, 0},
+            { 0, 1 / tanf(FOV / 2 / 180 * PI), 0, 0 },
+            { 0, 0, fFar / (fFar - fNear), 1 },
+            { 0, 0, -fFar * fNear / (fFar - fNear), 0 }
+        });
+    }
 };
