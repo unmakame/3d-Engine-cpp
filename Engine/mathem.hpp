@@ -59,4 +59,75 @@ public:
             { 0, 0, -fFar * fNear / (fFar - fNear), 0 }
         });
     }
+    static matr4x4 get_rot_x(float angle){
+        matr4x4 matrix;
+        matrix.m[0][0] = 1.0f;
+        matrix.m[1][1] = cosf(angle);
+        matrix.m[1][2] = sinf(angle);
+        matrix.m[2][1] = -sinf(angle);
+        matrix.m[2][2] = cosf(angle);
+        matrix.m[3][3] = 1.0f;
+        return matrix;
+    }
+
+    static matr4x4 get_rot_y(float angle){
+        matr4x4 matrix;
+        matrix.m[0][0] = cosf(angle);
+        matrix.m[0][2] = sinf(angle);
+        matrix.m[2][0] = -sinf(angle);
+        matrix.m[1][1] = 1.0f;
+        matrix.m[2][2] = cosf(angle);
+        matrix.m[3][3] = 1.0f;
+        return matrix;
+    }
+
+    static matr4x4 get_rot_z(float angle){
+        matr4x4 matrix;
+        matrix.m[0][0] = cosf(angle);
+        matrix.m[0][1] = sinf(angle);
+        matrix.m[1][0] = -sinf(angle);
+        matrix.m[1][1] = cosf(angle);
+        matrix.m[2][2] = 1.0f;
+        matrix.m[3][3] = 1.0f;
+        return matrix;
+    }
+
+    static matr4x4 get_point_at_mat(Vecd& pos, Vecd& target, Vecd up){
+        Vecd newForward = target - pos;
+        newForward.norm();
+
+        Vecd a = newForward * dot_prod(up, newForward);
+        Vecd newUp = up - a;
+        newUp.norm();
+
+        Vecd newRight = cross_prod(newUp, newForward);
+
+        matr4x4 matrix;
+        matrix.m[0][0] = newRight.x;	matrix.m[0][1] = newRight.y;	matrix.m[0][2] = newRight.z;	matrix.m[0][3] = 0.0f;
+        matrix.m[1][0] = newUp.x;		matrix.m[1][1] = newUp.y;		matrix.m[1][2] = newUp.z;		matrix.m[1][3] = 0.0f;
+        matrix.m[2][0] = newForward.x;	matrix.m[2][1] = newForward.y;	matrix.m[2][2] = newForward.z;	matrix.m[2][3] = 0.0f;
+        matrix.m[3][0] = pos.x;			matrix.m[3][1] = pos.y;			matrix.m[3][2] = pos.z;			matrix.m[3][3] = 1.0f;
+        return matrix;
+    }
+
+    void invert(){
+        matr4x4 matrix;
+        matrix.m[0][0] = this->m[0][0]; matrix.m[0][1] = this->m[1][0]; matrix.m[0][2] = this->m[2][0]; matrix.m[0][3] = 0.0f;
+        matrix.m[1][0] = this->m[0][1]; matrix.m[1][1] = this->m[1][1]; matrix.m[1][2] = this->m[2][1]; matrix.m[1][3] = 0.0f;
+        matrix.m[2][0] = this->m[0][2]; matrix.m[2][1] = this->m[1][2]; matrix.m[2][2] = this->m[2][2]; matrix.m[2][3] = 0.0f;
+        matrix.m[3][0] = -(this->m[3][0] * matrix.m[0][0] + this->m[3][1] * matrix.m[1][0] + this->m[3][2] * matrix.m[2][0]);
+        matrix.m[3][1] = -(this->m[3][0] * matrix.m[0][1] + this->m[3][1] * matrix.m[1][1] + this->m[3][2] * matrix.m[2][1]);
+        matrix.m[3][2] = -(this->m[3][0] * matrix.m[0][2] + this->m[3][1] * matrix.m[1][2] + this->m[3][2] * matrix.m[2][2]);
+        matrix.m[3][3] = 1.0f;
+        *this = matrix;
+    }
+    friend Vecd operator * (Vecd i, matr4x4 m){
+        Vecd v;
+        v.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + i.w * m.m[3][0];
+        v.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + i.w * m.m[3][1];
+        v.z = i.x * m.m[0][2] + i.y * m.m[1][2] + i.z * m.m[2][2] + i.w * m.m[3][2];
+        v.w = i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + i.w * m.m[3][3];
+        if (v.w) { v.x /= v.w; v.y /= v.w; v.z /= v.w; }
+        return v;
+    }
 };
